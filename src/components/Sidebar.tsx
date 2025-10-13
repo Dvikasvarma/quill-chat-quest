@@ -1,43 +1,20 @@
-import { Upload, Database, Search, Cloud } from "lucide-react";
+import { Upload, Database, Search, Cloud, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const location = useLocation();
   const [isBigQueryMode, setIsBigQueryMode] = useState(false);
-
-  const handleUploadCSV = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type === "text/csv" || file.name.endsWith(".csv")) {
-        toast.success(`CSV file "${file.name}" uploaded successfully!`);
-        // Here you would typically process the CSV file
-      } else {
-        toast.error("Please upload a valid CSV file");
-      }
-    }
-  };
-
-  const handleConnectBigQuery = () => {
-    toast.info("BigQuery connection dialog would open here");
-    // Here you would typically open a modal for BigQuery credentials
-  };
-
-  const handleViewSchema = () => {
-    toast.info("Schema viewer would open here");
-    // Here you would typically show the current database schema
-  };
 
   const handleBigQueryToggle = (checked: boolean) => {
     setIsBigQueryMode(checked);
     toast.success(checked ? "BigQuery mode enabled" : "BigQuery mode disabled");
   };
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="w-72 bg-[hsl(var(--sidebar))] text-[hsl(var(--sidebar-foreground))] flex flex-col h-screen">
@@ -49,40 +26,61 @@ const Sidebar = () => {
       </div>
 
       <div className="flex-1 px-4 space-y-2">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-        
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start gap-3 h-12 bg-[hsl(var(--sidebar-accent))] hover:bg-[hsl(var(--sidebar-accent))]/80 text-white"
-          onClick={handleUploadCSV}
-        >
-          <Upload className="w-5 h-5" />
-          Upload CSV
-        </Button>
+        <Link to="/">
+          <Button 
+            variant="ghost" 
+            className={`w-full justify-start gap-3 h-12 ${
+              isActive('/') 
+                ? 'bg-[hsl(var(--sidebar-accent))] hover:bg-[hsl(var(--sidebar-accent))]/80 text-white' 
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <MessageSquare className="w-5 h-5" />
+            Chat
+          </Button>
+        </Link>
 
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start gap-3 h-12 hover:bg-white/10"
-          onClick={handleConnectBigQuery}
-        >
-          <Database className="w-5 h-5" />
-          Connect to BigQuery
-        </Button>
+        <Link to="/upload">
+          <Button 
+            variant="ghost" 
+            className={`w-full justify-start gap-3 h-12 ${
+              isActive('/upload') 
+                ? 'bg-[hsl(var(--sidebar-accent))] hover:bg-[hsl(var(--sidebar-accent))]/80 text-white' 
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <Upload className="w-5 h-5" />
+            Upload CSV
+          </Button>
+        </Link>
 
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start gap-3 h-12 hover:bg-white/10"
-          onClick={handleViewSchema}
-        >
-          <Search className="w-5 h-5" />
-          View Schema
-        </Button>
+        <Link to="/bigquery">
+          <Button 
+            variant="ghost" 
+            className={`w-full justify-start gap-3 h-12 ${
+              isActive('/bigquery') 
+                ? 'bg-[hsl(var(--sidebar-accent))] hover:bg-[hsl(var(--sidebar-accent))]/80 text-white' 
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <Database className="w-5 h-5" />
+            Connect to BigQuery
+          </Button>
+        </Link>
+
+        <Link to="/schema">
+          <Button 
+            variant="ghost" 
+            className={`w-full justify-start gap-3 h-12 ${
+              isActive('/schema') 
+                ? 'bg-[hsl(var(--sidebar-accent))] hover:bg-[hsl(var(--sidebar-accent))]/80 text-white' 
+                : 'hover:bg-white/10'
+            }`}
+          >
+            <Search className="w-5 h-5" />
+            View Schema
+          </Button>
+        </Link>
       </div>
 
       <div className="p-6 border-t border-white/10">

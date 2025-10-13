@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Sidebar from "@/components/Sidebar";
 import ChatInput from "@/components/ChatInput";
 import SQLResult from "@/components/SQLResult";
 
@@ -29,33 +28,29 @@ ORDER BY todi.fit DESC;
   const sampleExplanation = "The top-performing product category is Laptops, contributing 25% profit in 2024.";
 
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar />
-      
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-center space-y-2 mb-8">
-              <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-                🤖 Chat with Your Data 😃
-              </h1>
-              <p className="text-muted-foreground">Ask questions, get instant insights</p>
-            </div>
-
-            {showResult && (
-              <SQLResult 
-                query={sampleQuery}
-                data={sampleData}
-                explanation={sampleExplanation}
-              />
-            )}
+    <div className="flex-1 flex flex-col">
+      <div className="flex-1 overflow-y-auto p-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="text-center space-y-2 mb-8">
+            <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+              🤖 Chat with Your Data 😃
+            </h1>
+            <p className="text-muted-foreground">Ask questions, get instant insights</p>
           </div>
+
+          {showResult && (
+            <SQLResult 
+              query={sampleQuery}
+              data={sampleData}
+              explanation={sampleExplanation}
+            />
+          )}
         </div>
+      </div>
 
-        <div className="border-t p-6">
-          <div className="max-w-4xl mx-auto">
-            <ChatInput onSend={handleSendMessage} />
-          </div>
+      <div className="border-t p-6">
+        <div className="max-w-4xl mx-auto">
+          <ChatInput onSend={handleSendMessage} />
         </div>
       </div>
     </div>
