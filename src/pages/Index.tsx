@@ -1,31 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ChatInput from "@/components/ChatInput";
 import SQLResult from "@/components/SQLResult";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Index = () => {
   const [showResult, setShowResult] = useState(false);
+  const [queryResult, setQueryResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [csvFiles, setCsvFiles] = useState<any[]>([]);
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSendMessage = (message: string) => {
-    console.log("Message sent:", message);
-    setShowResult(true);
+  useEffect(() => {
+    if (authLoading) return;
+    
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    loadCsvFiles();
+  }, [user, authLoading, navigate]);
+
+  const loadCsvFiles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('csv_files')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setCsvFiles(data || []);
+    } catch (error: any) {
+      console.error('Error loading CSV files:', error);
+    }
   };
 
-  // Sample data
-  const sampleQuery = `/sql
-SELECT product-name, SUM(profit) as total-profit
-FROM sales-data
-GROUP BY product-profit
-ORDER BY todi.fit DESC;
-  LIMIT 5;
-},`;
+  const handleSendMessage = async (message: string) => {
+    if (csvFiles.length === 0) {
+      toast.error("Please upload a CSV file first");
+      return;
+    }
 
-  const sampleData = [
-    { Product: "Laptop", Mobile: "Mobile", "45000": 45000, "Total Profit": "Total Profit" },
-    { Product: "Mablet", Mobile: 42000, "45000": 28000, "Total Profit": 21000 },
-    { Product: "Monitor", Mobile: "Headphones", "45000": 21000, "Total Profit": 18000 },
-  ];
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('query-csv', {
+        body: { 
+          query: message,
+          fileId: csvFiles[0].id
+        }
+      });
 
-  const sampleExplanation = "The top-performing product category is Laptops, contributing 25% profit in 2024.";
+      if (error) throw error;
+
+      setQueryResult({
+        query: data.query,
+        data: data.data.slice(0, 5),
+        explanation: `Found ${data.data.length} results from ${csvFiles[0].file_name}`
+      });
+      setShowResult(true);
+    } catch (error: any) {
+      console.error('Query error:', error);
+      toast.error(error.message || "Failed to execute query");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (authLoading) {
+    return <div className="flex-1 flex items-center justify-center">Loading...</div>;
+  }
+
 
   return (
     <div className="flex-1 flex flex-col">
@@ -38,11 +86,19 @@ ORDER BY todi.fit DESC;
             <p className="text-muted-foreground">Ask questions, get instant insights</p>
           </div>
 
-          {showResult && (
+          {csvFiles.length === 0 && (
+            <div className="text-center p-8 bg-[hsl(var(--muted))]/50 rounded-lg">
+              <p className="text-[hsl(var(--muted-foreground))]">
+                Upload a CSV file to start querying your data
+              </p>
+            </div>
+          )}
+          
+          {showResult && queryResult && (
             <SQLResult 
-              query={sampleQuery}
-              data={sampleData}
-              explanation={sampleExplanation}
+              query={queryResult.query}
+              data={queryResult.data}
+              explanation={queryResult.explanation}
             />
           )}
         </div>
@@ -50,7 +106,7 @@ ORDER BY todi.fit DESC;
 
       <div className="border-t p-6">
         <div className="max-w-4xl mx-auto">
-          <ChatInput onSend={handleSendMessage} />
+          <ChatInput onSend={handleSendMessage} disabled={loading} />
         </div>
       </div>
     </div>

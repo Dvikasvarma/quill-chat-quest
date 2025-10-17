@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 
 interface ChatInputProps {
   onSend: (message: string) => void;
+  disabled?: boolean;
 }
 
-const ChatInput = ({ onSend }: ChatInputProps) => {
+const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
@@ -32,10 +33,12 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
         onKeyPress={handleKeyPress}
         placeholder="Ask were the top 5 products by profit?"
         className="flex-1 h-12 text-base"
+        disabled={disabled}
       />
       <Button 
         onClick={handleSend}
         className="h-12 px-8 bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary))]/90"
+        disabled={disabled}
       >
         Ask
       </Button>

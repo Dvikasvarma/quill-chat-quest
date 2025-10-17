@@ -1,13 +1,15 @@
-import { Upload, Database, Search, Cloud, MessageSquare } from "lucide-react";
+import { Upload, Database, Search, Cloud, MessageSquare, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Sidebar = () => {
   const location = useLocation();
   const [isBigQueryMode, setIsBigQueryMode] = useState(false);
+  const { user, signOut } = useAuth();
 
   const handleBigQueryToggle = (checked: boolean) => {
     setIsBigQueryMode(checked);
@@ -83,7 +85,7 @@ const Sidebar = () => {
         </Link>
       </div>
 
-      <div className="p-6 border-t border-white/10">
+      <div className="p-6 border-t border-white/10 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm">
             <Cloud className="w-4 h-4" />
@@ -91,6 +93,17 @@ const Sidebar = () => {
           </div>
           <Switch checked={isBigQueryMode} onCheckedChange={handleBigQueryToggle} />
         </div>
+        
+        {user && (
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 h-12 hover:bg-white/10"
+            onClick={signOut}
+          >
+            <LogOut className="w-5 h-5" />
+            Sign Out
+          </Button>
+        )}
       </div>
     </div>
   );

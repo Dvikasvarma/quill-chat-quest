@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import UploadCSV from "./pages/UploadCSV";
 import BigQuery from "./pages/BigQuery";
 import Schema from "./pages/Schema";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Sidebar from "@/components/Sidebar";
 
@@ -21,6 +22,7 @@ const App = () => (
         <div className="flex h-screen bg-background">
           <Sidebar />
           <Routes>
+            <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<Index />} />
             <Route path="/upload" element={<UploadCSV />} />
             <Route path="/bigquery" element={<BigQuery />} />
