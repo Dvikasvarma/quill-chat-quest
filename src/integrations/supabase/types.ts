@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bigquery_connections: {
+        Row: {
+          created_at: string | null
+          credentials: Json
+          dataset: string
+          id: string
+          project_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credentials: Json
+          dataset: string
+          id?: string
+          project_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credentials?: Json
+          dataset?: string
+          id?: string
+          project_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      csv_files: {
+        Row: {
+          columns: Json
+          created_at: string | null
+          file_name: string
+          file_path: string
+          id: string
+          row_count: number | null
+          table_name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          columns: Json
+          created_at?: string | null
+          file_name: string
+          file_path: string
+          id?: string
+          row_count?: number | null
+          table_name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          columns?: Json
+          created_at?: string | null
+          file_name?: string
+          file_path?: string
+          id?: string
+          row_count?: number | null
+          table_name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
